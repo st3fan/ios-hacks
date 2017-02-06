@@ -15,7 +15,7 @@
 # HACK HACK HACK / MAY STOP WORKING / MAY NOT WORK / HORRIBLE CODE
 #
 
-import glob, os.path, plistlib, sys
+import glob, os.path, plistlib, re, sys
 
 XCODES = [
     "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform",
@@ -25,6 +25,12 @@ XCODES = [
 RUNTIMES="/Library/Developer/CoreSimulator/Profiles/Runtimes"
 
 DEFAULT_LANGUAGE_ORDER="/System/Library/Frameworks/Foundation.framework/en.lproj/DefaultLanguageOrder-iOS.plist"
+
+# Taken from http://stackoverflow.com/a/4836734
+def natural_sort(l): 
+    convert = lambda text: int(text) if text.isdigit() else text.lower() 
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    return sorted(l, key = alphanum_key)
 
 def ios_runtimes():
     if os.path.exists(RUNTIMES):
@@ -68,18 +74,22 @@ if __name__ == "__main__":
         for locale in locales_per_runtime[rt_version]:
             all_locales.add(locale)
 
-    print("<h1>iOS Tier-1 Locales</h1>")
+    print("<h1>iOS Locales</h1>")
+    print("<p><i>Stefan Arentz, February 2017</i></p>")
+    print('<p>Generated with <a href="https://github.com/st3fan/ios-hacks/blob/master/ios-locales.py">github.com/st3fan/ios-hacks/ios-locales.py</a></p>')
+
+    print("<h2>iOS Tier-1 Locales</h2>")
     print("<table width='75%'>")
     print("<tr>")
     print("<td></td>")
-    for runtime_version in locales_per_runtime.keys():
+    for runtime_version in natural_sort(locales_per_runtime.keys()):
         print("<td>%s</td>" % runtime_version)
     print("</tr>")
     for locale in sorted(all_locales):
         print("<tr>")
         print("<td>%s</td>" % locale)
         for runtime_version in locales_per_runtime.keys():
-            if locale in locales_per_runtime[runtime_version]:
+            if locale in natural_sort(locales_per_runtime[runtime_version]):
                 print("<td>%s</td>" % locale)
             else:
                 print("<td>-</td>")
@@ -94,17 +104,17 @@ if __name__ == "__main__":
         for locale in locales_per_runtime[rt_version]:
             all_locales.add(locale)
 
-    print("<h1>iOS Tier-2 Locales</h1>")
+    print("<h2>iOS Tier-2 Locales</h2>")
     print("<table width='75%'>")
     print("<tr>")
     print("<td></td>")
-    for runtime_version in locales_per_runtime.keys():
+    for runtime_version in natural_sort(locales_per_runtime.keys()):
         print("<td>%s</td>" % runtime_version)
     print("</tr>")
     for locale in sorted(all_locales):
         print("<tr>")
         print("<td>%s</td>" % locale)
-        for runtime_version in locales_per_runtime.keys():
+        for runtime_version in natural_sort(locales_per_runtime.keys()):
             if locale in locales_per_runtime[runtime_version]:
                 print("<td>%s</td>" % locale)
             else:
